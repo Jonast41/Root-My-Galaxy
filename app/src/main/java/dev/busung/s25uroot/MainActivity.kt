@@ -720,6 +720,32 @@ private fun HistoryDetail(
                 )
             }
         }
+        item {
+            val context = LocalContext.current
+            FilledTonalButton(
+                onClick = {
+                    val exporter = dev.busung.s25uroot.log.LogExporter
+                    // export the history log directly
+                    val dir = java.io.File(context.cacheDir, "logs").also { it.mkdirs() }
+                    val ts = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.US).format(java.util.Date())
+                    val file = java.io.File(dir, "rmg_history_$ts.txt")
+                    file.writeText("=== Root My Galaxy History Log ===\n\n${entry.log}")
+                    val uri = androidx.core.content.FileProvider.getUriForFile(
+                        context, "${context.packageName}.log_provider", file
+                    )
+                    val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                        putExtra(android.content.Intent.EXTRA_SUBJECT, "Root My Galaxy history log")
+                        addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    context.startActivity(android.content.Intent.createChooser(intent, "Export log…"))
+                },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+            ) {
+                Text("Export Log")
+            }
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 package dev.busung.s25uroot
 
+import dev.busung.s25uroot.log.LogExporter
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -83,6 +84,7 @@ class InstallActivity : ComponentActivity() {
                     installState = installState,
                     onRetry = { installViewModel.install(profileId) },
                     onClose = ::finish,
+                    onExportLog = { LogExporter.share(this) },
                 )
             }
         }
@@ -112,6 +114,7 @@ private fun InstallScreen(
     installState: InstallUiState,
     onRetry: () -> Unit,
     onClose: () -> Unit,
+    onExportLog: () -> Unit,
 ) {
     val logScrollState = rememberScrollState()
     LaunchedEffect(installState.log) {
@@ -174,11 +177,23 @@ private fun InstallScreen(
                             Text(stringResource(R.string.action_retry))
                         }
                     } else if (installState.phase == InstallPhase.Installed) {
-                        Button(
-                            onClick = onClose,
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            Text(stringResource(R.string.action_done))
+                            FilledTonalButton(
+                                onClick = onExportLog,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text("Export Log")
+                            }
+                            Button(
+                                onClick = onClose,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text(stringResource(R.string.action_done))
+                            }
+
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package dev.busung.s25uroot
 
+import dev.busung.s25uroot.log.LogBuffer
 import android.app.Application
 import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
@@ -323,6 +324,7 @@ class InstallViewModel(application: Application) : AndroidViewModel(application)
     private fun appendLog(line: String) {
         val cleanLine = stripAnsi(line).trim()
         if (cleanLine.isBlank()) return
+        LogBuffer.append(cleanLine)
         mutableState.value = mutableState.value.copy(
             log = (mutableState.value.log + "\n" + cleanLine).trim(),
         )
